@@ -1,0 +1,7 @@
+DELIMITER $$
+CREATE DEFINER=`stastrjn_nrn`@`localhost` PROCEDURE `ADD_NOTIFICATION`(IN `EID` VARCHAR(36), IN `AID` INT, IN `MESS` TEXT)
+    COMMENT 'Добавление оповещения'
+BEGIN
+ INSERT INTO notifications (IDEVENT, AGENTID, MESSAGE) values (EID,AID,MESS);
+END$$
+DELIMITER ;
