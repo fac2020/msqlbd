@@ -11,12 +11,13 @@ BEGIN
 	-- Всё отработанное за день
 	WHEN -2 THEN select COUNT(wpp.ID) into iresult from wrk_prpk wpp where wpp.AGENTID=IDAGENT and wpp.TYPEOWN=ZTYPE and wpp.ARCHIVE=0 and wpp.WRKOWN in (0,1,2,3,4)
       and wpp.DATEMYWORK >= PKPRDATECREATE and wpp.DATEMYWORK <= PKPRDATECREATE+1;      
-    -- Обычная обработка параметров
-	WHEN (0,1,2,3,4) THEN select COUNT(wpp.ID) into iresult from wrk_prpk wpp where wpp.AGENTID=IDAGENT and wpp.TYPEOWN=ZTYPE and wpp.ARCHIVE=0 and wpp.WRKOWN=WRKSTATE 
-      and wpp.DATECREATE >= PKPRDATECREATE and wpp.DATECREATE <= PKPRDATECREATE+1;  
 	-- Созданные за день связки без учета отработки
     WHEN -3 THEN  select COUNT(wpp.ID) into iresult from wrk_prpk wpp where wpp.AGENTID=IDAGENT and wpp.TYPEOWN=ZTYPE and wpp.ARCHIVE=0 
       and wpp.DATECREATE >= PKPRDATECREATE and wpp.DATECREATE <= PKPRDATECREATE+1;  
+    -- Обычная обработка параметров
+	ELSE select COUNT(wpp.ID) into iresult from wrk_prpk wpp where wpp.AGENTID=IDAGENT and wpp.TYPEOWN=ZTYPE and wpp.ARCHIVE=0 and wpp.WRKOWN=WRKSTATE 
+      and wpp.DATECREATE >= PKPRDATECREATE and wpp.DATECREATE <= PKPRDATECREATE+1;  
+      
     END CASE;
   END IF;
 RETURN iresult;
