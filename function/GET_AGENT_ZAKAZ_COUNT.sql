@@ -11,7 +11,7 @@ BEGIN
  END IF;
 -- Продажа
  IF (TYPEZAK = 1) THEN
-  select count(wpk.ID) into iresult FROM wrk_zakazpk wpk where wpk.AGENTID = IDAGENT and wpk.STATE in (0,1);
+  select count(wpk.ID) into iresult FROM wrk_zakazpr wpk where wpk.AGENTID = IDAGENT and wpk.STATE in (0,1);
  END IF;
 RETURN iresult;
 END$$
