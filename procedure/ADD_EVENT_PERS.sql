@@ -1,5 +1,5 @@
 DELIMITER $$
-CREATE DEFINER=`stastrjn_nrn`@`localhost` PROCEDURE `ADD_EVENT_PERS`(IN `EUID` VARCHAR(36), IN `EEVENTID` INT, IN `ESUBJECT` INT)
+CREATE DEFINER=`stastrjn_r_test`@`localhost` PROCEDURE `ADD_EVENT_PERS`(IN `EUID` VARCHAR(36), IN `EEVENTID` INT, IN `ESUBJECT` INT)
 BEGIN
   DECLARE done INT DEFAULT FALSE;
   DECLARE iPERSONTYPEID INT;
@@ -22,50 +22,54 @@ BEGIN
     FETCH cur INTO iPERSONTYPEID;
     IF done THEN LEAVE read_loop; END IF;
     IF (iPERSONTYPEID in (1,2)) THEN  
-    -- Определяем исполнителя
-      -- Получаем исходную таблицу из SP_EVENTS
+    
+      
       select se.TABNAME into sourcetable from SP_EVENTS se where se.UID=EEVENTID;
-      -- Получаем агента из таблицы 
+      
      
       CASE sourcetable  
-       WHEN 'wrk_zakazpr' THEN  -- из продажи
+       WHEN 'wrk_zakazpr' THEN  
          select wz.AGENTID into PERSONID from wrk_zakazpr wz where wz.ID=ESUBJECT;
-       WHEN 'wrk_zakazpk' THEN -- из покупки
+       WHEN 'wrk_zakazpk' THEN 
          select wz.AGENTID into PERSONID from wrk_zakazpk wz where wz.ID=ESUBJECT;
-       WHEN 'sp_agent' THEN -- из агентов
+       WHEN 'sp_agent' THEN 
          set PERSONID = ESUBJECT;
-       WHEN 'task' THEN -- из задач
+       WHEN 'task' THEN 
           select ts.AGENTID into PERSONID from task ts where ts.ID=ESUBJECT;    
-       WHEN 'prlog' THEN -- из задач
+       WHEN 'prlog' THEN 
           select zz.AGENTID into PERSONID from wrk_zakazpr zz where zz.ID IN (SELECT pl.PRID from prlog pl where pl.ID=ESUBJECT);
+       WHEN 'wrk_ipotekarequest' THEN    
+          SELECT wz.AGENTID into PERSONID FROM wrk_zakazpr wz WHERE wz.ID in (select wi.OBJECTID from wrk_ipotekarequest wi where wi.ID = ESUBJECT);
       END CASE;      
      
 
-   -- Определяем аудитора
+   
     if (PERSONID > 0) then SELECT sp.PARENT into AUDITID FROM  sp_agent sp where sp.ID=PERSONID; else set AUDITID = -1; END IF;
     
     END IF;
     
-   -- Определяем клиента 
-   -- Получаем клиента из таблицы 
+   
+   
       CASE sourcetable  
-       WHEN 'wrk_zakazpr' THEN  -- из продажи
+       WHEN 'wrk_zakazpr' THEN  
          select wz.CLIENTID into CLIENTID from wrk_zakazpr wz where wz.ID=ESUBJECT;
-       WHEN 'wrk_zakazpk' THEN -- из покупки
+       WHEN 'wrk_zakazpk' THEN 
          select wz.CLIENTID into CLIENTID from wrk_zakazpk wz where wz.ID=ESUBJECT;
-       WHEN 'prlog' THEN -- из лога смены статуса Пр
-        select zz.CLIENTID into CLIENTID from wrk_zakazpr zz where zz.ID IN (SELECT pl.PRID from prlog pl where pl.ID=ESUBJECT);        
+       WHEN 'prlog' THEN 
+        select zz.CLIENTID into CLIENTID from wrk_zakazpr zz where zz.ID IN (SELECT pl.PRID from prlog pl where pl.ID=ESUBJECT); 
+       WHEN 'wrk_ipotekarequest' THEN 
+       select wi.USERID into CLIENTID from wrk_ipotekarequest where wi.ID = ESUBJECT;
       END CASE;    
     
     CASE iPERSONTYPEID
-      WHEN 1 THEN SET IRESULT = PERSONID; -- готовим к добавлению в WRK_EVENT_PERSON исполнителя
-      WHEN 2 THEN SET IRESULT = AUDITID; -- готовим к добавлению в WRK_EVENT_PERSON аудитора
-      WHEN 3 THEN SET IRESULT = CLIENTID; -- готовим к добавлению в WRK_EVENT_PERSON клиента
+      WHEN 1 THEN SET IRESULT = PERSONID; 
+      WHEN 2 THEN SET IRESULT = AUDITID; 
+      WHEN 3 THEN SET IRESULT = CLIENTID; 
     END CASE; 
    
-   -- Добавляем запись в WRK_EVENT_PERSON
+   
    insert into WRK_EVENT_PERSON (IDEVENT, IDPERSONTYPE, IDSUBJECT) values (EUID,iPERSONTYPEID,IRESULT);
-   -- Добавляем оповещение, если фигурант - исполнитель или аудитор
+   
    IF (iPERSONTYPEID in (1,2)) THEN
      call ADD_NOTIFICATION(EUID,IRESULT,'');
    END IF;  
