@@ -10,11 +10,12 @@ BEGIN
 -- Генерим UUID
   DECLARE NEWUID VARCHAR(36);
   set NEWUID = UUID();
--- Добавляем событие
-  insert into WRK_EVENTS (UID, IDEVENT, IDSUBJECT, COMMENT) VALUES (NEWUID, EVENTID, SUBJECTID, ECOMMENT);
 -- Добавляем связанные с событием персоналии в WRK_EVENT_PERSON
 -- согласно предопределенным в SP_EVENT_PERSON
   call ADD_EVENT_PERS(NEWUID, EVENTID, SUBJECTID);
+  -- Добавляем событие
+  insert into WRK_EVENTS (UID, IDEVENT, IDSUBJECT, COMMENT) VALUES (NEWUID, EVENTID, SUBJECTID, ECOMMENT);
+
 
   
   
