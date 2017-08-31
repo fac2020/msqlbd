@@ -1,0 +1,1 @@
+ALTER TABLE `wrk_bizrule` CHANGE `EVENTPARAMS` `EVENTPARAMS` INT(11) NOT NULL COMMENT 'отслуживаемые параметры события (если есть)';
