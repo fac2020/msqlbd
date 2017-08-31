@@ -13,7 +13,7 @@ BEGIN
     DECLARE sEVENTPARAMS VARCHAR(50); -- отслуживаемые параметры события (если есть)
     DECLARE iACTIONTYPEID Int DEFAULT -1; -- id типа действия
     DECLARE sACTIONTEMPLATE text; -- шаблон для действя (назв. для задачи, текст для сообщения)
-    DECLARE sACTIONPARAMS VARCHAR(200); -- параметры действия (даты для задачи)
+    DECLARE sACTIONPARAMS JSON; -- параметры действия (даты для задачи)
     
  DECLARE done INT DEFAULT FALSE;   
  DECLARE cur CURSOR FOR SELECT wb.PERSONTYPEID, wb.AGENTID, wb.EVENTPARAMS, wb.ACTIONTYPEID, wb.ACTIONTEMPLATE, wb.ACTIONPARAMS FROM wrk_bizrule wb WHERE wb.AGENCYID = iFirmid and wb.IDEVENT = EVTYPE AND wb.ISWRK = 1;
@@ -55,18 +55,8 @@ BEGIN
     IF (iPERSONTYPEID IN (1,2,4,5)) THEN
      SELECT wep.IDSUBJECT INTO iAGENTID FROM WRK_EVENT_PERSON wep WHERE wep.IDEVENT=EVID AND wep.IDPERSONTYPE=iPERSONTYPEID;
     END IF; 
-   /*
-   CALL ADD_2TMPDEBUGLOG (concat('Событие ',EVID)); -- ОТЛАДКА!!
-   CALL ADD_2TMPDEBUGLOG (concat('Персоналия ',iPERSONTYPEID)); -- ОТЛАДКА!!
-   CALL ADD_2TMPDEBUGLOG (concat('Агент ',iAGENTID)); -- ОТЛАДКА!!
-   CALL ADD_2TMPDEBUGLOG (concat('Параметры события ',sEVENTPARAMS)); -- ОТЛАДКА!!
-   CALL ADD_2TMPDEBUGLOG (concat('Тип действия ',iACTIONTYPEID)); -- ОТЛАДКА!!
-   CALL ADD_2TMPDEBUGLOG (concat('Шаблон ',sACTIONTEMPLATE)); -- ОТЛАДКА!!
-   CALL ADD_2TMPDEBUGLOG (concat('Параметры действия ',sACTIONPARAMS)); -- ОТЛАДКА!!
-   */
    
-   
-   CALL WRK_DOBR (iPERSONTYPEID,iAGENTID,sEVENTPARAMS,iACTIONTYPEID,sACTIONTEMPLATE,sACTIONPARAMS,EVID);   
+    CALL WRK_DOBR (iPERSONTYPEID,iAGENTID,sEVENTPARAMS,iACTIONTYPEID,sACTIONTEMPLATE,sACTIONPARAMS,EVID,iFirmid,EVSUBJ,sTablename);   
 
  END LOOP;
  CLOSE cur;
