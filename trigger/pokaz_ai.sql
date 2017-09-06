@@ -1,0 +1,4 @@
+CREATE TRIGGER `pokaz_ai` AFTER INSERT ON `pokaz`
+ FOR EACH ROW BEGIN
+ call ADD_EVENT(9,NEW.ID,'',null);
+END
