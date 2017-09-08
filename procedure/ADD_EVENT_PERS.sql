@@ -31,12 +31,12 @@ BEGIN
    
     FETCH cur INTO iPERSONTYPEID;
     IF done THEN LEAVE read_loop; END IF;
-    IF (iPERSONTYPEID in (1,2)) THEN  
+    IF (iPERSONTYPEID in (1,2,4,5)) THEN  
     
       
       select se.TABNAME into sourcetable from SP_EVENTS se where se.UID=EEVENTID;
       
-     
+     -- Определение ответственного
       CASE sourcetable  
        WHEN 'wrk_zakazpr' THEN  
          select wz.AGENTID into PERSONID from wrk_zakazpr wz where wz.ID=ESUBJECT;
@@ -54,20 +54,21 @@ BEGIN
        WHEN 'pokaz' THEN  
 	   BEGIN
          select pk.PRID, pk.PKID into ZAKAZPR,ZAKAZPK from pokaz pk where pk.ID=ESUBJECT;
+          -- call ADD_2TMPDEBUGLOG(concat('ZAKAZPR ',ZAKAZPR)); -- Отладка!
+          -- call ADD_2TMPDEBUGLOG(concat('ZAKAZPK ',ZAKAZPK)); -- Отладка!
 		 select wzr.AGENTID into PERSONID2 from wrk_zakazpr wzr where wzr.ID=ZAKAZPR;
-		 select wzk.AGENTID into PERSONID from wrk_zakazpk wzk where wzk.ID=ZAKAZPK;
+		 select wzk.AGENTID into PERSONID from wrk_zakazpk wzk where wzk.ID=ZAKAZPK;      
 		END;  
       END CASE;      
      
 
-   
+   -- Определение аудитора по ответственному
     if (PERSONID > 0) then SELECT sp.PARENT into AUDITID FROM  sp_agent sp where sp.ID=PERSONID; else set AUDITID = -1; END IF;
 	if (PERSONID2 > 0) then SELECT sp2.PARENT into AUDITID2 FROM  sp_agent sp2 where sp2.ID=PERSONID; else set AUDITID2 = -1; END IF;
-    
     END IF;
     
    
-   
+   -- Определение клиента
       CASE sourcetable  
        WHEN 'wrk_zakazpr' THEN  
          select wz.CLIENTID into CLIENTID from wrk_zakazpr wz where wz.ID=ESUBJECT;
@@ -78,7 +79,8 @@ BEGIN
        WHEN 'wrk_ipotekarequest' THEN 
        select wi.USERID into CLIENTID from wrk_ipotekarequest where wi.ID = ESUBJECT;
        WHEN 'pokaz' THEN 
-         select wzk.CLIENTID into CLIENTID from wrk_zakazpk wzk where wzk.ID=ZAKAZPK;	   
+         select pk.PRID, pk.PKID into ZAKAZPR,ZAKAZPK from pokaz pk where pk.ID=ESUBJECT;
+         select wzk.CLIENTID into CLIENTID from wrk_zakazpk wzk where wzk.ID=ZAKAZPK;
       END CASE;    
     
     CASE iPERSONTYPEID
@@ -89,11 +91,20 @@ BEGIN
       WHEN 5 THEN SET IRESULT = AUDITID2; 	  
 	  WHEN 6 THEN SET IRESULT = -1; 
     END CASE; 
-   
-   
+
+       -- call ADD_2TMPDEBUGLOG(concat('PERSONID2 ',PERSONID2)); -- Отладка!
+       -- call ADD_2TMPDEBUGLOG(concat('PERSONID ',PERSONID)); -- Отладка!         
+       --  call ADD_2TMPDEBUGLOG(concat('AUDITID ',AUDITID)); -- Отладка!
+       --  call ADD_2TMPDEBUGLOG(concat('AUDITID2 ',AUDITID2)); -- Отладка!    
+/*
+   call ADD_2TMPDEBUGLOG(concat('IDEVENT  ',EUID)); -- Отладка!
+   call ADD_2TMPDEBUGLOG(concat('IDPERSONTYPE   ',iPERSONTYPEID)); -- Отладка!
+   call ADD_2TMPDEBUGLOG(concat('IDSUBJECT ',IRESULT)); -- Отладка!
+  */ 
    insert into WRK_EVENT_PERSON (IDEVENT, IDPERSONTYPE, IDSUBJECT) values (EUID,iPERSONTYPEID,IRESULT);
-   
-   IF (iPERSONTYPEID in (1,2,4,5)) THEN
+  
+  -- Если пользователь системы reman, то создать оповещение
+   IF (iPERSONTYPEID in (1,2,4,5,6)) THEN
      call ADD_NOTIFICATION(EUID,IRESULT,'');
    END IF;  
   END LOOP;
