@@ -1,0 +1,1 @@
+INSERT INTO `sp_userprop` (`ID`, `NAME`, `UPCOMMENT`, `UPTYPE`, `DEFSTRING`, `UTYPE`, `PARENTUID`) VALUES ('', 'SHOWAGENT', 'Показывать контакты агента посторонним', '0', '0', '1', '');
