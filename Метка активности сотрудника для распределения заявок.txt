@@ -1,0 +1,1 @@
+ALTER TABLE `sp_agent` ADD `ACTIVE` TINYINT NOT NULL DEFAULT '1' COMMENT 'Метка активности сотрудника для распределения заявок' AFTER `FIRMID`;
