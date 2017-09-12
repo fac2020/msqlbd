@@ -1,0 +1,1 @@
+INSERT INTO `sp_userprop` (`ID`, `NAME`, `UPCOMMENT`, `UPTYPE`, `DEFSTRING`, `UTYPE`, `PARENTUID`) VALUES ('', 'SHOWCONTACT', 'Показывать контакты физлица на объявлениях', '0', '0', '0', '');
