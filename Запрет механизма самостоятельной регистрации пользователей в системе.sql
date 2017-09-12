@@ -1,0 +1,1 @@
+INSERT INTO `sp_userprop` (`ID`, `NAME`, `UPCOMMENT`, `UPTYPE`, `DEFSTRING`, `UTYPE`, `PARENTUID`) VALUES ('', 'REGISTRATELOCK', 'Запрет механизма самостоятельной регистрации пользователей в системе', '0', '0', '4', '');

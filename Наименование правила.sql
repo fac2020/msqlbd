@@ -1,0 +1,1 @@
+ALTER TABLE `wrk_bizrule` ADD `NAME` VARCHAR(200) NOT NULL COMMENT 'Наименование правила' AFTER `ORDERPOS`;
