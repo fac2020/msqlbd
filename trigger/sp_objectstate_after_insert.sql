@@ -1,5 +1,5 @@
-DELIMITER $$
 DROP TRIGGER IF EXISTS `sp_objectstate_after_insert`;
+DELIMITER $$
 CREATE TRIGGER `sp_objectstate_after_insert` AFTER INSERT ON `sp_objectstate`
  FOR EACH ROW BEGIN
 -- Добавление в параметры пользователей
