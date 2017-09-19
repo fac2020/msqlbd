@@ -1,0 +1,1 @@
+ALTER TABLE `wrk_prpk` ADD `RANGPKPR` TINYINT NOT NULL COMMENT 'Ранг связки (справочник #9)' AFTER `COMMENT`;

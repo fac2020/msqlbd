@@ -41,18 +41,34 @@ BEGIN
     set jINACTIONPARAMS = INACTIONPARAMS;
     set dSTIME = jINACTIONPARAMS->"$.starttime"; 
     set dETIME = jINACTIONPARAMS->"$.endtime";
-    IF ((dSTIME > -1) and (dETIME > -1)) THEN    
-      set dSTARTTIME = DATE_ADD(CURRENT_TIMESTAMP,INTERVAL dSTIME HOUR);
-      set dENDTIME = DATE_ADD(CURRENT_TIMESTAMP,INTERVAL dETIME HOUR);
-    ELSE
-      -- Если срок начала иили окончания меньше нуля, то получаем эти данные из объекта события
+    
+	-- Время начала задачи
+	IF (dSTIME > -1) THEN
+      set dSTARTTIME = DATE_ADD(CURRENT_TIMESTAMP,INTERVAL dSTIME HOUR);	
+	ELSE
+	-- Если срок начала меньше нуля, то получаем эти данные из объекта события	
       -- Пока только для показов
       IF (INTABLENAME = 'pokaz' ) THEN
         SELECT pz.POKAZTIME into dSTARTTIME FROM pokaz pz where pz.ID = INSUBJECT;
-        set dENDTIME = DATE_ADD(dSTARTTIME,INTERVAL 1 DAY);
-      END IF;
-          
-    END IF;
+      END IF;	
+	END IF;
+	
+	-- Время окончания задачи
+	IF (dETIME > -1) THEN
+	  IF (dSTIME > -1) THEN
+        set dENDTIME = DATE_ADD(CURRENT_TIMESTAMP,INTERVAL dETIME HOUR);	
+	  ELSE 
+	    set dENDTIME = DATE_ADD(dSTARTTIME,INTERVAL dETIME HOUR);	
+	  END IF;
+	ELSE
+	-- Если срок начала меньше нуля, то получаем эти данные из объекта события	
+      -- Пока только для показов
+      IF (INTABLENAME = 'pokaz' ) THEN
+        set dENDTIME = DATE_ADD(dSTARTTIME,INTERVAL 1 DAY); -- Считаем, что показ должен завершиться не позднее чем через сутки после начала
+      END IF;	
+	END IF;	
+	
+
    /*
    CALL ADD_2TMPDEBUGLOG (concat('jINACTIONPARAMS ',jINACTIONPARAMS)); -- ОТЛАДКА!!
    CALL ADD_2TMPDEBUGLOG (concat('dSTIME ',dSTIME)); -- ОТЛАДКА!!

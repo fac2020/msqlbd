@@ -1,0 +1,1 @@
+ALTER TABLE `wrk_zakazpk` ADD `ZAKAZPR` INT NOT NULL COMMENT 'ID заявки на продажу, если покупка по конкретной заявке' AFTER `BOUNDSRBOTTOM`;
