@@ -24,7 +24,7 @@ BEGIN
 
 
   CASE INACTIONTYPEID 
-  WHEN 1 THEN call ADD_MESSAGE(32,INAGENTID,sBody,1); -- Внутрисистемное сообщение
+  WHEN 1 THEN call ADD_MESSAGE(-1,INAGENTID,sBody,1); -- Внутрисистемное сообщение
   WHEN 2 THEN -- Письмо на электронную почту
     BEGIN 
       SET sSUBJECT = 'Сообщение от reman.pro';

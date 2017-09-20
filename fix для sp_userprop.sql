@@ -1,0 +1,3 @@
+ALTER TABLE `sp_userprop` CHANGE `UTYPE` `UTYPE` TINYINT(4) NULL DEFAULT '0' COMMENT 'Тип пользователя, для котрого доступен параметр: -1 - для всех, 0 - физлицо, 1 - агентство, 2 - агент, 4 - администратор, 5 - система';
+
+INSERT INTO `sp_userprop` (`ID`, `NAME`, `UPCOMMENT`, `UPTYPE`, `DEFSTRING`, `UTYPE`, `PARENTUID`) VALUES ('', 'NOPKPRONEAGENT', 'Не допускать автоматического распределения двух связанных заявок (заявка на заявку) одному агенту.', '0', '1', '1', '');
