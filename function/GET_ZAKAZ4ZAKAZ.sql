@@ -1,5 +1,6 @@
+DROP FUNCTION IF EXISTS GET_ZAKAZ4ZAKAZ;
 DELIMITER $$
-CREATE DEFINER=`stastrjn_r_test`@`localhost` FUNCTION `GET_ZAKAZ4ZAKAZ`(`ZAKAZ` INT, `FROMDATE` DATE, `TODATE` DATE) RETURNS int(11)
+CREATE DEFINER=`stastrjn_nrn`@`localhost` FUNCTION `GET_ZAKAZ4ZAKAZ`(`ZAKAZ` INT, `ZTYPE` TINYINT, `FROMDATE` DATE, `TODATE` DATE) RETURNS int(11)
     COMMENT 'Возвращает количество заявок, заведенных на заявку на продажу'
 BEGIN
   DECLARE iResult int;
