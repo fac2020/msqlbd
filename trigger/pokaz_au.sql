@@ -1,3 +1,4 @@
+DROP TRIGGER IF EXISTS `pokaz_au`;
 CREATE TRIGGER `pokaz_au` AFTER UPDATE ON `pokaz`
  FOR EACH ROW BEGIN
  -- Закрываем назначеные СИСТЕМОЙ задачи по показу 
@@ -13,4 +14,9 @@ CREATE TRIGGER `pokaz_au` AFTER UPDATE ON `pokaz`
    call ADD_EVENT(11,NEW.ID,'',null);
  END IF;
  
+  -- Загружен акт показа
+IF (OLD.AKTPOKAZA <> NEW.AKTPOKAZA) THEN
+  call ADD_EVENT(42,NEW.ID,'',null);
+END IF;
+
 END

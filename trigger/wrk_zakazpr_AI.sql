@@ -1,6 +1,13 @@
 DROP TRIGGER IF EXISTS `wrk_zakazpr_AI`;
 DELIMITER $$
-CREATE TRIGGER `wrk_zakazpr_AI` AFTER INSERT ON `wrk_zakazpr` FOR EACH ROW BEGIN
- -- Создаём событие "Добавление заявки Пр"
+CREATE TRIGGER `wrk_zakazpr_AI` AFTER INSERT ON `wrk_zakazpr`
+ FOR EACH ROW BEGIN
+ 
  call ADD_EVENT(13,NEW.ID,'',null);
+ -- добавляем статус объекта
+ IF (NEW.PRIVATEOBJECT=1) THEN
+   INSERT INTO pragency (PRID, AGENCYID, STATE) VALUES (NEW.ID, NEW.FIRMID,1);
+ ELSE
+   INSERT INTO pragency (PRID, AGENCYID, STATE) VALUES (NEW.ID, NEW.FIRMID,19);
+ END IF;  
 END
