@@ -1,0 +1,2 @@
+INSERT INTO `sp_userprop` (`ID`, `NAME`, `UPCOMMENT`, `UPTYPE`, `DEFSTRING`, `UTYPE`, `PARENTUID`) VALUES ('', 'NOAGENTZAKAZPRDELETE', 'Не допускать удаления заявки на продажу агентами', '0', '1', '1', '');
+INSERT INTO `sp_userprop` (`ID`, `NAME`, `UPCOMMENT`, `UPTYPE`, `DEFSTRING`, `UTYPE`, `PARENTUID`) VALUES ('', 'NOAGENTZAKAZPКDELETE', 'Не допускать удаления заявки на покупку агентами', '0', '1', '1', '');
